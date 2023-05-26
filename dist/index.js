@@ -123,7 +123,14 @@ credentials "${credentialsHostname}" {
   core.debug(`Adding credentials to ${credsFile}`);
   await fs.writeFile(credsFile, creds);
 }
-
+async function isVersionFileExist(versionFilePath) {
+  try {
+    const file = await fs.access(versionFilePath);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
 async function resolveVersionInput() {
   let version = core.getInput("terraform_version");
   const versionFileInput = core.getInput("terraform_version_file");
@@ -140,7 +147,7 @@ async function resolveVersionInput() {
       process.env.GITHUB_WORKSPACE,
       versionFileInput
     );
-    const fileExists = await fs.access(versionFilePath);
+    const fileExists = await isVersionFileExist(versionFilePath);
     if (!fileExists) {
       throw new Error(
         `The specified terraform version file at: ${versionFilePath} does not exist`
