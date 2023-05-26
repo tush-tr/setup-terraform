@@ -3,7 +3,7 @@ name: 'Setup Terraform'
 on:
   push:
     branches:
-    - main
+    - test
   pull_request:
 
 defaults:
@@ -34,6 +34,26 @@ jobs:
     - name: Validate Teraform Version - ${{ matrix['terraform-versions'] }}
       if: ${{ matrix['terraform-versions'] == 'latest' }}
       run: terraform version | grep 'Terraform v'
+  terraform-versions-file:
+    name: 'Terraform Versions from file'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+    - name: Create version file
+      run: |
+        echo 1.2.3 >> .terraform-version
+
+    - name: Setup Terraform - versionfile
+      uses: ./
+      with:
+        terraform_version_file: .terraform-version
+
+    - name: Validate Teraform Version - version-file
+      run: terraform version
 
   terraform-versions-no-wrapper:
     name: 'Terraform Versions No Wrapper'
