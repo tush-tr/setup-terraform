@@ -46,6 +46,7 @@ jobs:
     - name: Create version file
       run: |
         echo 1.2.3 >> .terraform-version
+        cat .terraform-version
 
     - name: Setup Terraform - versionfile
       uses: ./
@@ -53,7 +54,7 @@ jobs:
         terraform_version_file: .terraform-version
 
     - name: Validate Teraform Version - version-file
-      run: terraform version
+      run: terraform version | grep 1.2.3
 
   terraform-versions-no-wrapper:
     name: 'Terraform Versions No Wrapper'
